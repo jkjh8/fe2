@@ -1,7 +1,14 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { useNotify } from 'src/composables/useNotify'
+import { api } from 'src/boot/axios'
 import { required, chkEmail, chkLength } from 'src/composables/useRules'
+
+const $q = useQuasar()
+const $r = useRouter()
+const $n = useNotify()
 
 const userInfo = reactive({
   email: '',
@@ -19,8 +26,35 @@ function matchPass(v) {
   return '비밀번호가 일치 하지 않습니다.'
 }
 
-function onRegisger() {
+async function existsUser(v) {
+  try {
+    const r = await api.get(`/auth/checkemail?email=${v}`)
+    if (r) {
+      return '이미 사용중인 이메일 입니다'
+    }
+    return true
+  } catch (err) {
+    console.error(err)
+    return '사용자 확인중 오류가 발생하였습니다'
+  }
+}
+
+async function onRegisger() {
   console.log(userInfo)
+  try {
+    $q.loading.show()
+    await api.post('/auth/register', userInfo)
+    $q.loading.hide()
+    $n.info({
+      message: '사용자 등록이 완료 되었습니다',
+      caption: '로그인 페이지로 이동합니다'
+    })
+    $r.push('/auth/login')
+  } catch (err) {
+    $q.loading.hide()
+    $n.error('사용자 등록 중 오류가 발생하였습니다')
+    console.error(err)
+  }
 }
 </script>
 
@@ -43,7 +77,7 @@ function onRegisger() {
           v-model="userInfo.email"
           outlined
           placeholder="이메일 주소"
-          :rules="[required, chkEmail]"
+          :rules="[required, chkEmail, existsUser]"
           lazy-rules
         />
         <div class="text-bold">비밀번호</div>

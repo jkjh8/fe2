@@ -48,7 +48,7 @@
 
       <q-menu :offset="[0, 20]">
         <q-list separator style="min-width: 300px">
-          <q-item clickable to="/admin/usermanagement">
+          <q-item clickable to="/admin/users">
             <q-item-section avatar>
               <q-avatar
                 style="border: solid 1px #eee"
