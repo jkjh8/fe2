@@ -18,7 +18,7 @@
               <q-item-label caption>방송구간 추가 및 삭제</q-item-label>
             </q-item-section>
           </q-item>
-          <q-item clickable to="/device">
+          <q-item clickable to="/zones/devices">
             <q-item-section avatar>
               <q-avatar
                 style="border: solid 1px #eee"

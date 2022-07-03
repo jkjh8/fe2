@@ -1,9 +1,9 @@
 <script setup>
-import moment from 'moment'
 import { ref, reactive, onMounted, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import { useNotify } from 'src/composables/useNotify'
+import { ISOToDate } from 'src/composables/useDate'
 
 import PageName from 'components/layout/pageName.vue'
 import ConfirmDialog from 'components/dialogs/confirmDialog.vue'
@@ -186,11 +186,11 @@ onMounted(() => {
           </q-td>
 
           <q-td key="createdAt" :props="props">
-            {{ moment(props.row.createAt).format('YYYY-MM-DD hh:mm:ss a') }}
+            {{ ISOToDate(props.row.createAt) }}
           </q-td>
 
           <q-td key="lastLogin" :props="props">
-            {{ moment(props.row.lastLogin).format('YYYY-MM-DD hh:mm:ss a') }}
+            {{ ISOToDate(props.row.lastLogin) }}
           </q-td>
 
           <q-td key="actions" :props="props">
@@ -209,7 +209,7 @@ onMounted(() => {
       class="flex flex-center"
       v-model="pages.page"
       :max="totalPages"
-      :max-pages="10"
+      :max-pages="pages.rowsPerPage"
       direction-links
       boundary-links
     />

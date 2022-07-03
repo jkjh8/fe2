@@ -1,3 +1,6 @@
+import MainLayout from 'src/layouts/MainLayout.vue'
+import SimpleLayout from 'src/layouts/SimpleLayout.vue'
+
 const routes = [
   {
     path: '/',
@@ -19,8 +22,27 @@ const routes = [
   },
 
   {
-    path: '/admin',
+    path: '/zones',
     component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: 'devices',
+        component: () => import('pages/zones/devicesPage.vue')
+      }
+    ]
+  },
+
+  {
+    path: '/eventlog',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/eventlog/eventlogPage.vue') }
+    ]
+  },
+
+  {
+    path: '/admin',
+    component: () => MainLaimport('layouts/MainLayout.vue'),
     children: [
       { path: 'users', component: () => import('pages/admin/usersPage.vue') }
     ]
