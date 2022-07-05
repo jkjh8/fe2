@@ -26,6 +26,10 @@ const routes = [
     component: () => import('layouts/MainLayout.vue'),
     children: [
       {
+        path: '',
+        component: () => import('pages/zones/zonesPage.vue')
+      },
+      {
         path: 'devices',
         component: () => import('pages/zones/devicesPage.vue')
       }
@@ -42,7 +46,7 @@ const routes = [
 
   {
     path: '/admin',
-    component: () => MainLaimport('layouts/MainLayout.vue'),
+    component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: 'users', component: () => import('pages/admin/usersPage.vue') }
     ]

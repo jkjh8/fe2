@@ -55,7 +55,6 @@ async function onLogin() {
     $n.error('로그인 오류가 발생하였습니다.')
     console.error(err)
   }
-  console.log(userInfo)
 }
 onMounted(() => {
   emailFromLocal()

@@ -8,6 +8,9 @@ import { ISOToDate } from 'src/composables/useDate'
 
 import PageName from 'components/layout/pageName.vue'
 import ConfirmDialog from 'components/dialogs/confirmDialog.vue'
+import AddDeviceDialog from 'components/dialogs/devices/addDevice.vue'
+import EditDeviceDialog from 'components/dialogs/devices/editDevice.vue'
+import InfoDeviceDialog from 'components/dialogs/devices/infoDevice.vue'
 
 const $q = useQuasar()
 const $n = useNotify()
@@ -25,9 +28,86 @@ const totalPages = computed(() => {
   return Math.ceil(devices.len / pages.value.rowsPerPage)
 })
 
+function deviceAdd() {
+  $q.dialog({
+    component: AddDeviceDialog
+  }).onOk(async (device) => {
+    try {
+      $q.loading.show()
+      await api.post('/device', device)
+      await getDevices()
+      $q.loading.hide()
+    } catch (err) {
+      $q.loading.hide()
+      $n.error('디바이스 정보를 등록하지 못하였습니다.')
+      console.error(err)
+    }
+  })
+}
+
+function deviceEdit(item) {
+  $q.dialog({
+    component: EditDeviceDialog,
+    componentProps: { item }
+  }).onOk(async (device) => {
+    try {
+      $q.loading.show()
+      await api.put('/device', device)
+      await getDevices()
+      $q.loading.hide()
+    } catch (err) {
+      $q.loading.hide()
+      $n.error('디바이스 정보를 수정하지 못했습니다.')
+      console.error(err)
+    }
+  })
+}
+
+function deviceInfo(item) {
+  $q.dialog({
+    component: InfoDeviceDialog,
+    componentProps: { item }
+  })
+}
+
+function deviceDelete(item) {
+  $q.dialog({
+    component: ConfirmDialog,
+    componentProps: {
+      icon: 'delete',
+      iconColor: 'red-10',
+      title: '삭제',
+      caption: `${item.name} ${item.ipaddress} 해당 디바이스를 삭제 하시겠습니까?`
+    }
+  }).onOk(async () => {
+    try {
+      $q.loading.show()
+      await api.get(
+        `/device/delete?item=${encodeURIComponent(JSON.stringify(item))}`
+      )
+      await getDevices()
+      $q.loading.hide()
+    } catch (err) {
+      $q.loading.hide()
+      console.error(err)
+    }
+  })
+}
+
+async function getDevices() {
+  try {
+    $q.loading.show()
+    devices.getDevices()
+    devices.getStatus()
+    $q.loading.hide()
+  } catch (err) {
+    console.error(err)
+    $n.error('디바이스 리스트를 갱신하지 못했습니다.')
+  }
+}
+
 onMounted(() => {
-  devices.getDevices()
-  devices.getStatus()
+  getDevices()
 })
 </script>
 
@@ -47,7 +127,7 @@ onMounted(() => {
           </template>
         </q-input>
         <q-separator class="q-ml-md" vertical inset />
-        <q-btn icon="add_circle" flat round color="primary">
+        <q-btn icon="add_circle" flat round color="primary" @click="deviceAdd">
           <q-tooltip>추가</q-tooltip>
         </q-btn>
         <q-btn icon="refresh" flat round color="primary">
@@ -97,6 +177,8 @@ onMounted(() => {
       ]"
       :rows="devices.devices"
       :filter="filter"
+      :pagination="pages"
+      hide-pagination
     >
       <template #body="props">
         <q-tr :props="props">
@@ -136,13 +218,31 @@ onMounted(() => {
 
           <q-td key="actions" :props="props">
             <div>
-              <q-btn flat round color="primary" icon="info">
+              <q-btn
+                flat
+                round
+                color="primary"
+                icon="info"
+                @click="deviceInfo(props.row)"
+              >
                 <q-tooltip>상세정보</q-tooltip>
               </q-btn>
-              <q-btn flat round color="primary" icon="edit">
+              <q-btn
+                flat
+                round
+                color="primary"
+                icon="edit"
+                @click="deviceEdit(props.row)"
+              >
                 <q-tooltip>수정</q-tooltip>
               </q-btn>
-              <q-btn flat round color="red-10" icon="delete">
+              <q-btn
+                flat
+                round
+                color="red-10"
+                icon="delete"
+                @click="deviceDelete(props.row)"
+              >
                 <q-tooltip>삭제</q-tooltip>
               </q-btn>
               <q-btn flat round color="primary" icon="refresh">
