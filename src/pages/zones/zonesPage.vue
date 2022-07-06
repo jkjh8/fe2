@@ -11,6 +11,7 @@ import ConfirmDialog from 'components/dialogs/confirmDialog.vue'
 import TooltipDelay from 'components/tooltipDelay.vue'
 import AddCoreDialog from 'components/dialogs/zones/addCore.vue'
 import EditCoreDialog from 'components/dialogs/zones/editCore.vue'
+import AddChildrenDialog from 'components/dialogs/zones/addChildren.vue'
 
 const $q = useQuasar()
 const $n = useNotify()
@@ -103,6 +104,13 @@ function deleteCore(item) {
   })
 }
 
+function addChildren(item) {
+  $q.dialog({
+    component: AddChildrenDialog,
+    componentProps: { item }
+  })
+}
+
 onMounted(() => {
   getZones()
   getDevices()
@@ -175,7 +183,7 @@ onMounted(() => {
                     round
                     icon="add_circle"
                     color="primary"
-                    @click.prevent.stop=""
+                    @click.prevent.stop="addChildren(zone)"
                   >
                     <q-tooltip>방송구간추가</q-tooltip>
                   </q-btn>
